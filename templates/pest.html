@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <!-- Left Column: Pest Image Scanner -->
+    <div class="col-md-6 mb-4">
+        <div class="card-glass p-4 h-100">
+            <h4 class="fw-bold mb-3 text-success border-bottom pb-2">
+                <i class="fa-solid fa-spider me-2"></i> Pest Classification System
+            </h4>
+            
+            <p class="text-muted small mb-3">
+                Upload a photo of the insect pest found on crops. The AI core will identify the genus and list treatment strategies.
+            </p>
+
+            <div class="mb-4 text-center">
+                <!-- Preview Canvas -->
+                <div class="mx-auto border rounded bg-light mb-3 d-flex align-items-center justify-content-center" style="max-width: 100%; height: 260px; overflow: hidden; position: relative;">
+                    <img id="imagePreview" src="#" alt="Preview" style="display: none; max-width: 100%; max-height: 100%; object-fit: contain;">
+                    <i class="fa-solid fa-bug display-3 text-muted opacity-25" id="uploadPlaceholder"></i>
+                </div>
+                
+                <input class="form-control" type="file" id="imageUpload" name="image_file_loader" accept="image/*" required>
+            </div>
+
+            <div class="d-flex gap-3 align-items-center mb-3">
+                <button type="button" id="analyzeBtn" class="btn btn-agri flex-grow-1 bg-primary" style="border-color:var(--accent-color);" disabled onclick="analyzeImage('imagePreview', true)">
+                    <i class="fa-solid fa-crosshairs me-1"></i> Classify Pest with AI
+                </button>
+            </div>
+            
+            <div id="aiStatus" class="small text-muted text-center"><i class="fa-solid fa-circle-notch fa-spin me-1"></i>Loading TF.js Neural Engine...</div>
+
+            <!-- AI result outputs inserted dynamically by ai.js -->
+            <div id="aiResult" class="mt-4"></div>
+
+            <!-- Logging Submit Form (Hidden until model runs) -->
+            <form action="{{ url_for('pest') }}" method="POST" enctype="multipart/form-data">
+                <!-- Keep inputs hidden to bind tfjs variables -->
+                <input type="hidden" name="detected_name" id="detectedNameInput">
+                <input type="hidden" name="confidence" id="confidenceInput">
+                <input type="hidden" name="treatment" id="treatmentInput">
+                <input type="hidden" name="prevention" id="preventionInput">
+                
+                <!-- Input clone file element to submit image to server database -->
+                <div class="d-none">
+                    <input class="form-control" type="file" id="formImageFile" name="image_file">
+                </div>
+                
+                <div class="d-grid mt-3">
+                    <button type="submit" id="saveLogBtn" class="btn btn-outline-agri py-2" disabled>
+                        <i class="fa-solid fa-cloud-arrow-up me-2"></i> Log Pest Entry in History
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Right Column: Pest Detection History -->
+    <div class="col-md-6 mb-4">
+        <div class="card-glass p-4 h-100">
+            <h4 class="fw-bold mb-4 text-success border-bottom pb-2">
+                <i class="fa-solid fa-list-check me-2"></i> Identified Pest History
+            </h4>
+
+            {% if reports %}
+                <div style="max-height: 550px; overflow-y: auto; padding-right: 5px;">
+                    {% for log in reports %}
+                    <div class="p-3 mb-3 border rounded">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <h6 class="fw-bold mb-0 text-success">{{ log.detected_name }}</h6>
+                            <span class="badge bg-success-subtle text-success">{{ log.confidence }}% Conf.</span>
+                        </div>
+                        <small class="text-muted d-block mb-2"><i class="fa-regular fa-clock me-1"></i> {{ log.created_at }}</small>
+                        <p class="mb-2 text-muted small"><strong>Organic & Chemical Treatment:</strong> {{ log.treatment }}</p>
+                        <p class="mb-0 text-muted small"><strong>Prevention Tactics:</strong> {{ log.prevention }}</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="text-center py-5 text-muted">
+                    <i class="fa-solid fa-spider display-4 mb-3"></i>
+                    <p class="mb-0">No pest diagnostics logged in database. Select and scan an image to start.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+    // Copy the file upload element to the hidden form file element when changed
+    document.getElementById('imageUpload').addEventListener('change', function(e) {
+        document.getElementById('uploadPlaceholder').style.display = 'none';
+        
+        const files = e.target.files;
+        if (files.length > 0) {
+            document.getElementById('formImageFile').files = files;
+        }
+    });
+</script>
+{% endblock %}

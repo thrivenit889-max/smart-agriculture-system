@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-12">
+        <h3 class="fw-bold text-success mb-1"><i class="fa-solid fa-helicopter me-2"></i> Drone Crop Monitoring System</h3>
+        <p class="text-muted">Dynamic telemetry analysis, field health heatmaps, and simulated aerial drone tracking.</p>
+    </div>
+</div>
+
+<!-- Telemetry Readouts Row -->
+<div class="row mb-4">
+    <div class="col-md-3 mb-3">
+        <div class="card-glass p-3 text-center">
+            <span class="text-muted small d-block mb-1">Drone Connection Status</span>
+            <h5 class="fw-bold mb-0 text-success"><i class="fa-solid fa-signal text-success me-2"></i> Connected (RTK)</h5>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card-glass p-3 text-center">
+            <span class="text-muted small d-block mb-1">Average Field Health NDVI</span>
+            <h5 class="fw-bold mb-0 text-success">92.4% Optimal</h5>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card-glass p-3 text-center">
+            <span class="text-muted small d-block mb-1">Battery Charge Level</span>
+            <h5 class="fw-bold mb-0 text-warning"><i class="fa-solid fa-battery-three-quarters text-warning me-2"></i> 82% (48 mins left)</h5>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card-glass p-3 text-center">
+            <span class="text-muted small d-block mb-1">GPS Satellites Locked</span>
+            <h5 class="fw-bold mb-0 text-primary"><i class="fa-solid fa-satellite text-primary me-2"></i> 18 Satellites</h5>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Left Column: Simulated Radar Sweep Visualizer -->
+    <div class="col-md-5 mb-4">
+        <div class="card-glass p-4 text-center">
+            <h5 class="fw-bold mb-4 text-success border-bottom pb-2">
+                <i class="fa-solid fa-circle-notch me-2"></i> Flight Area Radar / Scanning
+            </h5>
+            
+            <div class="mx-auto my-3" style="max-width: 320px;">
+                <div class="radar-grid">
+                    <div class="radar-sweep"></div>
+                    <!-- Mock blips -->
+                    <div class="radar-blip" style="top: 30%; left: 45%;"></div>
+                    <div class="radar-blip" style="top: 60%; left: 70%; animation-delay: 0.5s;"></div>
+                    <div class="radar-blip" style="top: 75%; left: 25%; animation-delay: 1.0s;"></div>
+                </div>
+            </div>
+            
+            <div class="mt-4 p-3 bg-light rounded text-start border">
+                <small class="text-muted d-block mb-1"><strong>Drone Model:</strong> DJI Agras T40 Multispectral</small>
+                <small class="text-muted d-block mb-1"><strong>Scanning Speed:</strong> 8.5 m/s</small>
+                <small class="text-muted d-block"><strong>Altitudes Locked:</strong> 15.0 meters uniform AGL</small>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Column: Crop Health Heatmap Simulation -->
+    <div class="col-md-7 mb-4">
+        <div class="card-glass p-4 h-100">
+            <h5 class="fw-bold mb-4 text-success border-bottom pb-2">
+                <i class="fa-solid fa-map me-2"></i> Crop Health Heatmap (NDVI Spectral Analysis)
+            </h5>
+            
+            <!-- NDVI Heatmap Canvas Matrix -->
+            <div class="border rounded p-2 bg-dark text-center mb-3">
+                <div class="d-flex flex-column gap-1 mx-auto" style="max-width: 520px; aspect-ratio: 1.6; background-color: #0c0f1d; border-radius: 4px; padding: 5px;">
+                    <!-- Raw SVG representing field sector NDVI map -->
+                    <svg viewBox="0 0 500 300" class="w-100 h-100 rounded">
+                        <!-- Field Area A (Healthy Green) -->
+                        <polygon points="10,10 240,10 240,140 10,140" fill="url(#ndviGreenGrad)" opacity="0.85" stroke="#ffffff" stroke-width="1.5"/>
+                        <!-- Field Area B (Warning Orange - Low Moisture) -->
+                        <polygon points="250,10 490,10 490,140 250,140" fill="url(#ndviOrangeGrad)" opacity="0.85" stroke="#ffffff" stroke-width="1.5"/>
+                        <!-- Field Area C (Healthy Green) -->
+                        <polygon points="10,150 240,150 240,290 10,290" fill="url(#ndviGreenGrad)" opacity="0.8" stroke="#ffffff" stroke-width="1.5"/>
+                        <!-- Field Area D (Diseased Patch Red Alert) -->
+                        <polygon points="250,150 490,150 490,290 250,290" fill="url(#ndviRedGrad)" opacity="0.9" stroke="#ffffff" stroke-width="1.5"/>
+                        
+                        <!-- Drone marker animation -->
+                        <circle cx="280" cy="90" r="10" fill="#3b82f6" stroke="#ffffff" stroke-width="2">
+                            <animate attributeName="cx" values="20;480;20" dur="20s" repeatCount="indefinite" />
+                            <animate attributeName="cy" values="20;140;280;20" dur="20s" repeatCount="indefinite" />
+                        </circle>
+
+                        <defs>
+                            <linearGradient id="ndviGreenGrad" x1="0" y1="0" x2="1" y2="1">
+                                <stop offset="0%" stop-color="#047857"/>
+                                <stop offset="100%" stop-color="#10b981"/>
+                            </linearGradient>
+                            <linearGradient id="ndviOrangeGrad" x1="0" y1="0" x2="1" y2="1">
+                                <stop offset="0%" stop-color="#d97706"/>
+                                <stop offset="100%" stop-color="#f59e0b"/>
+                            </linearGradient>
+                            <linearGradient id="ndviRedGrad" x1="0" y1="0" x2="1" y2="1">
+                                <stop offset="0%" stop-color="#b91c1c"/>
+                                <stop offset="100%" stop-color="#ef4444"/>
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                </div>
+            </div>
+
+            <!-- Legends explaining colors -->
+            <div class="row text-center mt-3">
+                <div class="col-4">
+                    <span class="d-inline-block rounded-circle me-1" style="width: 12px; height: 12px; background: linear-gradient(135deg, #047857, #10b981);"></span>
+                    <small class="text-muted">NDVI 0.7 - 1.0 (Healthy Leaf Canopy)</small>
+                </div>
+                <div class="col-4">
+                    <span class="d-inline-block rounded-circle me-1" style="width: 12px; height: 12px; background: linear-gradient(135deg, #d97706, #f59e0b);"></span>
+                    <small class="text-muted">NDVI 0.4 - 0.7 (Water Deficit stress)</small>
+                </div>
+                <div class="col-4">
+                    <span class="d-inline-block rounded-circle me-1" style="width: 12px; height: 12px; background: linear-gradient(135deg, #b91c1c, #ef4444);"></span>
+                    <small class="text-muted">NDVI &lt; 0.4 (Pest/Disease alert)</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

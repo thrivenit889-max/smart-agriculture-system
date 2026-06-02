@@ -1,0 +1,148 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-8">
+        <h3 class="fw-bold text-success mb-1"><i class="fa-solid fa-lock text-warning me-2"></i> Feedback Panel (Admin Staff)</h3>
+        <p class="text-muted">Review incoming farmer submissions, filter by AI sentiment parameters, and reply to suggestions.</p>
+    </div>
+</div>
+
+<!-- Aggregated Metrics Row -->
+<div class="row mb-4">
+    <!-- Totals -->
+    <div class="col-md-3 mb-3">
+        <div class="card-glass p-3 text-center">
+            <span class="text-muted small d-block mb-1">Total Submissions Received</span>
+            <h2 class="fw-bold mb-0 text-primary">{{ total_fb }}</h2>
+        </div>
+    </div>
+    
+    <!-- Positive Sentiment % -->
+    <div class="col-md-3 mb-3">
+        <div class="card-glass p-3 text-center border-bottom border-4 border-success">
+            <span class="text-muted small d-block mb-1">Positive Satisfaction Rate</span>
+            <h2 class="fw-bold mb-0 text-success">{{ pos_pct }}%</h2>
+        </div>
+    </div>
+    
+    <!-- Negative Sentiment % -->
+    <div class="col-md-3 mb-3">
+        <div class="card-glass p-3 text-center border-bottom border-4 border-danger">
+            <span class="text-muted small d-block mb-1">Negative Complaint Ratio</span>
+            <h2 class="fw-bold mb-0 text-danger">{{ neg_pct }}%</h2>
+        </div>
+    </div>
+
+    <!-- Top Complaints -->
+    <div class="col-md-3 mb-3">
+        <div class="card-glass p-3 text-center h-100">
+            <span class="text-muted small d-block mb-1">Primary Pain Points</span>
+            <div class="mt-2 text-start px-2">
+                {% if complaints %}
+                    {% for category in complaints %}
+                    <small class="d-block text-danger"><i class="fa-solid fa-circle-exclamation me-1"></i> {{ category.category }} ({{ category.count }})</small>
+                    {% endfor %}
+                {% else %}
+                    <small class="text-muted text-center d-block">No complaints logged.</small>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Sentiment Trends Graph -->
+    <div class="col-md-4 mb-4">
+        <div class="card-glass p-4 h-100">
+            <h5 class="fw-bold mb-4 text-success border-bottom pb-2"><i class="fa-solid fa-chart-pie me-2"></i> Sentiment Ratios</h5>
+            <div style="height: 250px; position: relative;">
+                <!-- Bind values to dataset attributes for charts.js rendering -->
+                <canvas id="sentimentChart" data-positive="{{ pos_pct }}" data-negative="{{ neg_pct }}"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Feed List with admin action -->
+    <div class="col-md-8 mb-4">
+        <div class="card-glass p-4 h-100">
+            <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-2">
+                <h5 class="fw-bold text-success mb-0"><i class="fa-solid fa-envelope-open-text me-2"></i> Farmer Feedback Feed</h5>
+                
+                <!-- Filter Dropdown -->
+                <div class="d-flex gap-2">
+                    <a href="{{ url_for('feedback_admin', sentiment='all') }}" class="btn btn-sm {% if current_filter == 'all' or not current_filter %}btn-success{% else %}btn-outline-success{% endif %}">All</a>
+                    <a href="{{ url_for('feedback_admin', sentiment='positive') }}" class="btn btn-sm {% if current_filter == 'positive' %}btn-success{% else %}btn-outline-success{% endif %}">Positive</a>
+                    <a href="{{ url_for('feedback_admin', sentiment='negative') }}" class="btn btn-sm {% if current_filter == 'negative' %}btn-success{% else %}btn-outline-success{% endif %}">Negative</a>
+                </div>
+            </div>
+
+            <div style="max-height: 550px; overflow-y: auto; padding-right: 5px;">
+                {% if feedbacks %}
+                    {% for fb in feedbacks %}
+                    <div class="p-3 mb-3 border rounded bg-light bg-opacity-10">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <div>
+                                <h6 class="fw-bold mb-0">
+                                    {% if fb.is_anonymous %}
+                                    <span class="text-muted"><i class="fa-solid fa-user-secret"></i> Anonymous Farmer</span>
+                                    {% else %}
+                                    <span class="text-primary"><i class="fa-solid fa-circle-user"></i> {{ fb.u_name }}</span>
+                                    {% endif %}
+                                </h6>
+                                <div class="mt-1">
+                                    <span class="text-warning small">
+                                        {% for i in range(fb.rating) %}<i class="fa-solid fa-star"></i>{% endfor %}
+                                        {% for i in range(5 - fb.rating) %}<i class="fa-regular fa-star text-muted"></i>{% endfor %}
+                                    </span>
+                                    <span class="badge bg-light text-dark border ms-2 small">Cat: {{ fb.category }}</span>
+                                </div>
+                            </div>
+                            <div>
+                                <span class="badge {% if fb.sentiment == 'positive' %}bg-success{% elif fb.sentiment == 'negative' %}bg-danger{% else %}bg-warning{% endif %}">
+                                    Score: {{ fb.sentiment_score }} ({{ fb.emotion }})
+                                </span>
+                            </div>
+                        </div>
+
+                        <p class="my-2 text-dark-emphasis" style="font-size:0.95rem;">"{{ fb.comment }}"</p>
+                        
+                        {% if fb.suggestion %}
+                        <div class="p-2 mb-2 bg-light border-start border-3 border-success small rounded">
+                            <strong>Farmer Suggestion:</strong> {{ fb.suggestion }}
+                        </div>
+                        {% endif %}
+
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <small class="text-muted"><i class="fa-solid fa-tags me-1"></i> Keywords: <span class="text-success-emphasis">{{ fb.keywords or 'None' }}</span></small>
+                            <small class="text-muted"><i class="fa-regular fa-clock me-1"></i> {{ fb.created_at }}</small>
+                        </div>
+
+                        <!-- Response Area -->
+                        {% if fb.admin_response %}
+                        <div class="p-2 border border-success-subtle bg-success-subtle bg-opacity-25 rounded mt-2">
+                            <small class="text-success fw-bold d-block"><i class="fa-solid fa-check me-1"></i> Logged Response:</small>
+                            <span class="text-muted small">{{ fb.admin_response }}</span>
+                        </div>
+                        {% else %}
+                        <form action="{{ url_for('feedback_admin') }}" method="POST" class="mt-2 border-top pt-2">
+                            <input type="hidden" name="response_id" value="{{ fb.id }}">
+                            <div class="input-group">
+                                <input type="text" class="form-control form-control-agri" name="admin_response" required placeholder="Type reply to farmer suggestion...">
+                                <button type="submit" class="btn btn-agri"><i class="fa-solid fa-reply"></i> Reply</button>
+                            </div>
+                        </form>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="text-center py-5 text-muted">
+                        <i class="fa-solid fa-envelope-open-text display-4 mb-3"></i>
+                        <p class="mb-0">No submissions found matching this category filter.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

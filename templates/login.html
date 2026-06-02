@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center align-items-center" style="min-height: 70vh;">
+    <div class="col-md-5">
+        <div class="card-glass shadow-lg">
+            <div class="card-header-agri text-center py-4 bg-success text-white">
+                <h3 class="mb-0 fw-bold"><i class="fa-solid fa-lock me-2"></i> Farmer Login</h3>
+            </div>
+            <div class="card-body-agri p-4">
+                <form action="{{ url_for('login') }}" method="POST">
+                    
+                    <div class="mb-3">
+                        <label for="email" class="form-label fw-bold text-muted">Email Address</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light text-muted"><i class="fa-solid fa-envelope"></i></span>
+                            <input type="email" class="form-control form-control-agri" id="email" name="email" required placeholder="name@email.com">
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="password" class="form-label fw-bold text-muted">Password</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light text-muted"><i class="fa-solid fa-key"></i></span>
+                            <input type="password" class="form-control form-control-agri" id="password" name="password" required placeholder="Enter secure password">
+                        </div>
+                    </div>
+
+                    <div class="d-grid mb-3">
+                        <button type="submit" class="btn btn-agri w-100 py-2">
+                            <i class="fa-solid fa-right-to-bracket me-2"></i> Login to Farm Portal
+                        </button>
+                    </div>
+
+                    <div class="text-center mt-3">
+                        <span class="text-muted small">New Farmer? </span>
+                        <a href="{{ url_for('register') }}" class="text-success fw-bold small text-decoration-none">Register Account Here</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,178 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-8">
+        <h3 class="fw-bold text-success mb-1">Namaste, {{ user.name }}!</h3>
+        <p class="text-muted">Welcome to your Smart Agri Dashboard. Here is your farm's performance overview.</p>
+    </div>
+    <div class="col-md-4 text-end">
+        <span class="text-muted small"><i class="fa-solid fa-location-dot"></i> Village: {{ user.village }} | District: {{ user.district }}</span>
+    </div>
+</div>
+
+<!-- Key Stat Cards Grid -->
+<div class="row mb-4">
+    <!-- Stat 1: Active Crops -->
+    <div class="col-md-4 mb-3">
+        <div class="card-glass p-3 d-flex align-items-center justify-content-between">
+            <div>
+                <span class="text-muted small d-block mb-1">Active Monitored Crops</span>
+                <h2 class="fw-bold mb-0 text-success">{{ crop_count }}</h2>
+            </div>
+            <div class="bg-success-subtle p-3 rounded text-success">
+                <i class="fa-solid fa-seedling fs-2"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stat 2: Soil status -->
+    <div class="col-md-4 mb-3">
+        <div class="card-glass p-3 d-flex align-items-center justify-content-between">
+            <div>
+                <span class="text-muted small d-block mb-1">Soil Nutrition Profile</span>
+                <h2 class="fw-bold mb-0 text-info">{{ soil_status }}</h2>
+            </div>
+            <div class="bg-info-subtle p-3 rounded text-info">
+                <i class="fa-solid fa-flask-vial fs-2"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stat 3: Budget Balance -->
+    <div class="col-md-4 mb-3">
+        <div class="card-glass p-3 d-flex align-items-center justify-content-between">
+            <div>
+                <span class="text-muted small d-block mb-1">Finance Balance Ledger</span>
+                <h2 class="fw-bold mb-0 {% if balance >= 0 %}text-success{% else %}text-danger{% endif %}">₹{{ balance }}</h2>
+            </div>
+            <div class="{% if balance >= 0 %}bg-success-subtle text-success{% else %}bg-danger-subtle text-danger{% endif %} p-3 rounded">
+                <i class="fa-solid fa-wallet fs-2"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Main Body Grids -->
+<div class="row">
+    <!-- Left Column: Crops & Alerts -->
+    <div class="col-md-8">
+        <!-- Active Crops List -->
+        <div class="card-glass mb-4">
+            <div class="card-header-agri">
+                <span class="fw-bold"><i class="fa-solid fa-plant-wilt me-2"></i> Active Crops under Observation</span>
+                <a href="{{ url_for('crop_recommendation') }}" class="btn-outline-agri py-1 px-3 fs-7">Recommend Crops</a>
+            </div>
+            <div class="card-body-agri">
+                {% if crops %}
+                <div class="row">
+                    {% for crop in crops %}
+                    <div class="col-md-6 mb-3">
+                        <div class="p-3 border rounded">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <h6 class="fw-bold mb-0 text-success">{{ crop.crop_name }}</h6>
+                                <span class="badge bg-success-subtle text-success">{{ crop.status.capitalize() }}</span>
+                            </div>
+                            <small class="text-muted d-block">Type: {{ crop.crop_type }}</small>
+                            <small class="text-muted">Planted Date: {{ crop.planted_date }}</small>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="text-center py-4">
+                    <p class="text-muted mb-3">You don't have any crops registered yet.</p>
+                    <a href="{{ url_for('crop_recommendation') }}" class="btn btn-agri btn-sm">Get Crop Suggestions</a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Recent Notifications -->
+        <div class="card-glass mb-4">
+            <div class="card-header-agri">
+                <span class="fw-bold"><i class="fa-solid fa-bell me-2"></i> Recent Alerts & Notifications</span>
+            </div>
+            <div class="card-body-agri p-0">
+                <ul class="list-group list-group-flush">
+                    {% if alerts %}
+                        {% for alert in alerts %}
+                        <li class="list-group-item bg-transparent py-3 d-flex gap-3">
+                            <div class="fs-4 text-success pt-1">
+                                {% if alert.type == 'pest' %}
+                                <i class="fa-solid fa-bug text-danger"></i>
+                                {% elif alert.type == 'weather' %}
+                                <i class="fa-solid fa-cloud-bolt text-warning"></i>
+                                {% elif alert.type == 'irrigation' %}
+                                <i class="fa-solid fa-droplet text-primary"></i>
+                                {% else %}
+                                <i class="fa-solid fa-circle-exclamation text-info"></i>
+                                {% endif %}
+                            </div>
+                            <div>
+                                <p class="mb-1 text-primary-emphasis fw-medium" style="font-size:0.95rem;">{{ alert.message }}</p>
+                                <small class="text-muted small"><i class="fa-regular fa-clock me-1"></i> {{ alert.created_at }}</small>
+                            </div>
+                        </li>
+                        {% endfor %}
+                    {% else %}
+                        <li class="list-group-item bg-transparent text-center py-4">
+                            <span class="text-muted">No pending alerts. Your farm is operating smoothly!</span>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Column: Weather Summary & Financial charts -->
+    <div class="col-md-4">
+        <!-- Weather Overview Widget -->
+        <div class="card-glass mb-4 text-white bg-dark" style="background: linear-gradient(135deg, #064e3b, #111827) !important;">
+            <div class="card-body-agri text-center py-4">
+                <span class="small text-uppercase text-light opacity-75 d-block mb-2">Weather In {{ user.district }}</span>
+                <h1 class="display-3 fw-bold mb-0">29°C</h1>
+                <p class="mb-3"><i class="fa-solid fa-cloud-sun"></i> Partly Cloudy</p>
+                <div class="row pt-3 border-top border-secondary">
+                    <div class="col-6 border-end border-secondary">
+                        <small class="opacity-75 d-block">Humidity</small>
+                        <span class="fw-semibold">72%</span>
+                    </div>
+                    <div class="col-6">
+                        <small class="opacity-75 d-block">Rain Chance</small>
+                        <span class="fw-semibold">35%</span>
+                    </div>
+                </div>
+                <div class="mt-3">
+                    <a href="{{ url_for('weather') }}" class="btn btn-outline-agri btn-sm w-100" style="color: #fff; border-color: rgba(255,255,255,0.2);">See 7-Day Forecast</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Budget Donut Chart Visualizer -->
+        <div class="card-glass mb-4">
+            <div class="card-header-agri text-center">
+                <span class="fw-bold"><i class="fa-solid fa-chart-pie me-2"></i> Cash Flow Distribution</span>
+            </div>
+            <div class="card-body-agri" style="height: 240px; position: relative;">
+                <!-- Chart canvas data binding -->
+                <canvas id="dashboardChart" data-income="{{ total_income }}" data-expense="{{ total_expense }}"></canvas>
+            </div>
+        </div>
+
+        <!-- Quick actions buttons menu -->
+        <div class="card-glass mb-4">
+            <div class="card-header-agri">
+                <span class="fw-bold"><i class="fa-solid fa-cubes me-2"></i> Quick Action Board</span>
+            </div>
+            <div class="card-body-agri p-3">
+                <div class="d-grid gap-2">
+                    <a href="{{ url_for('soil') }}" class="btn btn-agri py-2 text-start"><i class="fa-solid fa-flask-vial me-2"></i> New Soil Analysis</a>
+                    <a href="{{ url_for('market') }}" class="btn btn-agri py-2 text-start bg-primary" style="border-color:var(--accent-color);"><i class="fa-solid fa-chart-line me-2"></i> Check Market Prices</a>
+                    <a href="{{ url_for('finance') }}" class="btn btn-agri py-2 text-start bg-warning" style="border-color:var(--warning-color);"><i class="fa-solid fa-wallet me-2"></i> Log Financial Entry</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

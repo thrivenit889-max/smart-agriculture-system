@@ -1,0 +1,152 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-12">
+        <h3 class="fw-bold text-success mb-1"><i class="fa-solid fa-wallet me-2"></i> Farm Expense Manager</h3>
+        <p class="text-muted">Maintain financial health, record sales revenue, seed budgets, and crop chemical costs.</p>
+    </div>
+</div>
+
+<!-- Ledger Aggregates Card Box -->
+<div class="row mb-4">
+    <!-- Income -->
+    <div class="col-md-4 mb-3">
+        <div class="card-glass p-3 border-start border-4 border-success">
+            <span class="text-muted small d-block mb-1">Total Income Recorded</span>
+            <h3 class="fw-bold mb-0 text-success">₹{{ income }}</h3>
+        </div>
+    </div>
+    
+    <!-- Expenses -->
+    <div class="col-md-4 mb-3">
+        <div class="card-glass p-3 border-start border-4 border-warning">
+            <span class="text-muted small d-block mb-1">Total Expenses Recorded</span>
+            <h3 class="fw-bold mb-0 text-warning">₹{{ expense }}</h3>
+        </div>
+    </div>
+    
+    <!-- Net Profit -->
+    <div class="col-md-4 mb-3">
+        <div class="card-glass p-3 border-start border-4 {% if profit >= 0 %}border-success{% else %}border-danger{% endif %}">
+            <span class="text-muted small d-block mb-1">Net Farm Margin</span>
+            <h3 class="fw-bold mb-0 {% if profit >= 0 %}text-success{% else %}text-danger{% endif %}">₹{{ profit }}</h3>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Left Column: Add Transaction Form & Pie chart -->
+    <div class="col-md-5 mb-4">
+        <!-- Input Form -->
+        <div class="card-glass p-4 mb-4">
+            <h5 class="fw-bold mb-3 text-success border-bottom pb-2"><i class="fa-solid fa-file-invoice-dollar me-2"></i> Log Transaction</h5>
+            
+            <form action="{{ url_for('finance') }}" method="POST">
+                <div class="mb-3">
+                    <label for="transaction_type" class="form-label fw-semibold text-muted">Type</label>
+                    <select class="form-select form-control-agri" id="transaction_type" name="transaction_type" required>
+                        <option value="expense">Expense (Cash Outflow)</option>
+                        <option value="income">Income (Cash Inflow)</option>
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label for="category" class="form-label fw-semibold text-muted">Category</label>
+                    <select class="form-select form-control-agri" id="category" name="category" required>
+                        <option value="Seeds">Seeds</option>
+                        <option value="Fertilizers">Fertilizers</option>
+                        <option value="Pesticides">Pesticides</option>
+                        <option value="Fuel & Machinery">Fuel & Machinery</option>
+                        <option value="Labor Cost">Labor Cost</option>
+                        <option value="Crop Sales">Crop Sales (Revenue)</option>
+                        <option value="Other">Other Miscellaneous</option>
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label for="amount" class="form-label fw-semibold text-muted">Amount (₹)</label>
+                    <input type="number" step="0.01" class="form-control form-control-agri" id="amount" name="amount" required placeholder="E.g., 2500">
+                </div>
+
+                <div class="mb-3">
+                    <label for="date" class="form-label fw-semibold text-muted">Transaction Date</label>
+                    <input type="date" class="form-control form-control-agri" id="date" name="date" required value="{{ date_today }}">
+                </div>
+
+                <div class="mb-4">
+                    <label for="description" class="form-label fw-semibold text-muted">Short Description</label>
+                    <input type="text" class="form-control form-control-agri" id="description" name="description" placeholder="E.g., Bought 2 bags of Urea">
+                </div>
+
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-agri py-2">
+                        <i class="fa-solid fa-receipt me-2"></i> Log Financial Entry
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Expense Distribution chart -->
+        <div class="card-glass p-4">
+            <h5 class="fw-bold mb-3 text-success border-bottom pb-2"><i class="fa-solid fa-chart-pie me-2"></i> Allocation Graph</h5>
+            <div style="height: 220px; position: relative;">
+                <canvas id="financeChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Column: Transactions History Grid -->
+    <div class="col-md-7 mb-4">
+        <div class="card-glass p-4 h-100">
+            <h5 class="fw-bold mb-4 text-success border-bottom pb-2"><i class="fa-solid fa-list-check me-2"></i> Accounting Ledger Sheet</h5>
+            
+            <div class="table-responsive" style="max-height: 550px; overflow-y: auto;">
+                <table class="table table-hover align-middle">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Category</th>
+                            <th>Description</th>
+                            <th class="text-end">Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if transactions %}
+                            {% for t in transactions %}
+                            <tr>
+                                <td>{{ t.date }}</td>
+                                <td><span class="badge bg-light text-dark border">{{ t.category }}</span></td>
+                                <td><small class="text-muted">{{ t.description or 'No notes' }}</small></td>
+                                <td class="text-end">
+                                    <strong class="{% if t.transaction_type == 'income' %}text-success{% else %}text-danger{% endif %}">
+                                        {% if t.transaction_type == 'income' %}+{% else %}-{% endif %} ₹{{ t.amount }}
+                                    </strong>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td colspan="4" class="text-center py-5 text-muted">
+                                    No ledger entries recorded yet. Submit the form to add one.
+                                </td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Automatically set date input field to today's date if not pre-populated
+    window.addEventListener('load', function() {
+        const dateInput = document.getElementById('date');
+        if (dateInput && !dateInput.value) {
+            const today = new Date().toISOString().split('T')[0];
+            dateInput.value = today;
+        }
+    });
+</script>
+{% endblock %}

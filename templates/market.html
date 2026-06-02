@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-8">
+        <h3 class="fw-bold text-success mb-1"><i class="fa-solid fa-chart-line me-2"></i> Market Price Tracker</h3>
+        <p class="text-muted">Daily Crop Mandi (APMC) Rates & Price Intelligence. Updated today.</p>
+    </div>
+</div>
+
+<!-- Comparison Charts & Profit Calculator -->
+<div class="row mb-4">
+    <!-- Comparison Trend Graph -->
+    <div class="col-md-7 mb-4">
+        <div class="card-glass p-4 h-100">
+            <h5 class="fw-bold mb-4 text-success border-bottom pb-2">
+                <i class="fa-solid fa-chart-gantt me-2"></i> Crop Price Spreads (₹/Quintal)
+            </h5>
+            <div style="height: 280px; position: relative;">
+                <canvas id="marketChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Profit Estimation Tool -->
+    <div class="col-md-5 mb-4">
+        <div class="card-glass p-4 h-100">
+            <h5 class="fw-bold mb-4 text-success border-bottom pb-2">
+                <i class="fa-solid fa-calculator me-2"></i> Profit Estimator Tool
+            </h5>
+            
+            <div class="mb-3">
+                <label for="calcCrop" class="form-label fw-semibold text-muted">Crop Name</label>
+                <select id="calcCrop" class="form-select form-control-agri" onchange="updateCalcRate()">
+                    <option value="2050" data-name="Paddy (Rice)">Paddy (Rice) - Avg: ₹2050</option>
+                    <option value="3350" data-name="Ragi (Finger Millet)">Ragi (Finger Millet) - Avg: ₹3350</option>
+                    <option value="1820" data-name="Maize (Corn)">Maize (Corn) - Avg: ₹1820</option>
+                    <option value="6900" data-name="Cotton">Cotton - Avg: ₹6900</option>
+                    <option value="1150" data-name="Tomato">Tomato - Avg: ₹1150</option>
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label for="calcQty" class="form-label fw-semibold text-muted">Estimated Yield Quantity (Quintals)</label>
+                <input type="number" id="calcQty" class="form-control form-control-agri" value="10" min="1" oninput="calculateProfit()">
+                <div class="form-text small">1 Quintal = 100 Kilograms.</div>
+            </div>
+
+            <div class="mb-3">
+                <label for="calcCost" class="form-label fw-semibold text-muted">Total Cultivation Cost (₹)</label>
+                <input type="number" id="calcCost" class="form-control form-control-agri" value="8000" min="0" oninput="calculateProfit()">
+            </div>
+
+            <hr>
+
+            <div class="p-3 bg-light rounded border">
+                <div class="d-flex justify-content-between mb-2">
+                    <span class="text-muted small">Estimated Revenue:</span>
+                    <strong class="text-success" id="calcRev">₹20,500</strong>
+                </div>
+                <div class="d-flex justify-content-between">
+                    <span class="text-muted small">Net Profit:</span>
+                    <strong class="text-success fs-5" id="calcNet">₹12,500</strong>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Daily APMC Price Feeds Table -->
+<div class="row">
+    <div class="col-md-12">
+        <div class="card-glass p-4">
+            <h5 class="fw-bold mb-4 text-success border-bottom pb-2"><i class="fa-solid fa-table-list me-2"></i> Current Market Rate Sheet</h5>
+            
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-success-subtle">
+                        <tr>
+                            <th>Crop Name</th>
+                            <th>Market (APMC) Location</th>
+                            <th>Min Rate (₹)</th>
+                            <th>Max Rate (₹)</th>
+                            <th>Average Rate (₹/Quintal)</th>
+                            <th>Date Updated</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for price in prices %}
+                        <tr>
+                            <td><strong class="text-success">{{ price.crop_name }}</strong></td>
+                            <td>{{ price.market_name }}</td>
+                            <td>₹{{ price.min_price }}</td>
+                            <td>₹{{ price.max_price }}</td>
+                            <td><span class="badge bg-success-subtle text-success fs-6 fw-bold">₹{{ price.avg_price }}</span></td>
+                            <td>{{ price.price_date }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function updateCalcRate() {
+        calculateProfit();
+    }
+    
+    function calculateProfit() {
+        const rate = parseFloat(document.getElementById('calcCrop').value) || 0;
+        const qty = parseFloat(document.getElementById('calcQty').value) || 0;
+        const cost = parseFloat(document.getElementById('calcCost').value) || 0;
+        
+        const revenue = rate * qty;
+        const net = revenue - cost;
+        
+        document.getElementById('calcRev').innerText = `₹${revenue.toLocaleString()}`;
+        document.getElementById('calcNet').innerText = `₹${net.toLocaleString()}`;
+        
+        const netEl = document.getElementById('calcNet');
+        if (net >= 0) {
+            netEl.className = "text-success fs-5 fw-bold";
+        } else {
+            netEl.className = "text-danger fs-5 fw-bold";
+        }
+    }
+    
+    // Run on startup
+    window.addEventListener('load', calculateProfit);
+</script>
+{% endblock %}

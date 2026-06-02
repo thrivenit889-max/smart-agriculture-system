@@ -1,0 +1,476 @@
+/* Core Agriculture Theme Design System */
+
+:root {
+    /* Light Theme Color Palette */
+    --bg-primary: #f4f7f6;
+    --bg-secondary: #ffffff;
+    --text-primary: #1e293b;
+    --text-secondary: #64748b;
+    --border-color: #e2e8f0;
+    
+    --primary-color: #10b981;      /* Emerald Green Base */
+    --primary-hover: #059669;      /* Emerald Green Dark Hover */
+    --primary-light: #d1fae5;      /* Mint Accent */
+    --primary-dark: #064e3b;       /* Forest Green Base */
+    
+    --accent-color: #3b82f6;       /* Blue Telemetry Accent */
+    --warning-color: #f59e0b;      /* Yellow warning */
+    --danger-color: #ef4444;       /* Red Alert */
+    --success-color: #10b981;
+    
+    --sidebar-bg: #064e3b;         /* Deep Forest Green */
+    --sidebar-hover: #047857;
+    --sidebar-text: #f8fafc;
+    --sidebar-active: #10b981;
+    
+    --card-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.03), 0 8px 10px -6px rgba(0, 0, 0, 0.02);
+    --border-radius: 12px;
+    --transition-speed: 0.3s;
+}
+
+body.dark-theme {
+    /* Dark Theme Override */
+    --bg-primary: #090d16;
+    --bg-secondary: #111827;
+    --text-primary: #f8fafc;
+    --text-secondary: #94a3b8;
+    --border-color: #1f2937;
+    
+    --primary-light: #064e3b;
+    --primary-hover: #34d399;
+    
+    --sidebar-bg: #031e17;
+    --sidebar-hover: #064e3b;
+    --sidebar-active: #059669;
+    
+    --card-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.25), 0 8px 10px -6px rgba(0, 0, 0, 0.2);
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Outfit', 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    min-height: 100vh;
+    transition: background-color var(--transition-speed) ease, color var(--transition-speed) ease;
+    overflow-x: hidden;
+}
+
+/* Sidebar Navigation Layout */
+.wrapper {
+    display: flex;
+    align-items: stretch;
+    width: 100%;
+}
+
+#sidebar {
+    min-width: 260px;
+    max-width: 260px;
+    background: var(--sidebar-bg);
+    color: var(--sidebar-text);
+    transition: all var(--transition-speed) ease;
+    min-height: 100vh;
+    box-shadow: 4px 0 20px rgba(0, 0, 0, 0.15);
+    position: fixed;
+    z-index: 100;
+}
+
+#sidebar.active {
+    margin-left: -260px;
+}
+
+.sidebar-header {
+    padding: 24px;
+    background: rgba(0,0,0,0.15);
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+.sidebar-header h4 {
+    color: var(--sidebar-text);
+    font-weight: 700;
+    font-size: 1.2rem;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+#sidebar ul.components {
+    padding: 20px 0;
+    list-style: none;
+}
+
+#sidebar ul li a {
+    padding: 12px 24px;
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    color: var(--sidebar-text);
+    text-decoration: none;
+    transition: all 0.2s ease;
+    opacity: 0.85;
+}
+
+#sidebar ul li a:hover {
+    color: #fff;
+    background: var(--sidebar-hover);
+    opacity: 1;
+    padding-left: 28px;
+}
+
+#sidebar ul li.active > a {
+    color: #fff;
+    background: var(--sidebar-active);
+    opacity: 1;
+    font-weight: 600;
+    border-left: 4px solid var(--primary-light);
+}
+
+/* Main Content Workspace Layout */
+#content {
+    width: 100%;
+    padding: 24px;
+    min-height: 100vh;
+    transition: all var(--transition-speed) ease;
+    margin-left: 260px;
+}
+
+#sidebar.active + #content {
+    width: 100%;
+    margin-left: 0;
+}
+
+/* Header & Top Bar Styles */
+.top-navbar {
+    background-color: var(--bg-secondary);
+    padding: 16px 24px;
+    border-radius: var(--border-radius);
+    margin-bottom: 24px;
+    box-shadow: var(--card-shadow);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: 1px solid var(--border-color);
+}
+
+.top-navbar h2 {
+    font-weight: 700;
+    font-size: 1.4rem;
+    color: var(--text-primary);
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+/* Premium Dashboard UI Elements */
+.card-glass {
+    background-color: var(--bg-secondary);
+    border-radius: var(--border-radius);
+    border: 1px solid var(--border-color);
+    box-shadow: var(--card-shadow);
+    transition: transform var(--transition-speed) ease, box-shadow var(--transition-speed) ease;
+    overflow: hidden;
+}
+
+.card-glass:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px -5px rgba(16, 185, 129, 0.15);
+}
+
+.card-header-agri {
+    padding: 18px 24px;
+    border-bottom: 1px solid var(--border-color);
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.05), transparent);
+    font-weight: 700;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.card-body-agri {
+    padding: 24px;
+}
+
+/* Custom Interactive Inputs */
+.form-control-agri {
+    background-color: var(--bg-primary);
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    color: var(--text-primary);
+    padding: 12px;
+    font-size: 0.95rem;
+    transition: all 0.2s ease;
+}
+
+.form-control-agri:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15);
+    outline: none;
+}
+
+/* Custom Action Buttons */
+.btn-agri {
+    background-color: var(--primary-color);
+    color: #ffffff;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: 600;
+    border: none;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+}
+
+.btn-agri:hover {
+    background-color: var(--primary-hover);
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+}
+
+.btn-outline-agri {
+    background-color: transparent;
+    color: var(--primary-color);
+    border: 2px solid var(--primary-color);
+    padding: 10px 22px;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.btn-outline-agri:hover {
+    background-color: var(--primary-color);
+    color: #ffffff;
+}
+
+/* Ratings Star Selector UI */
+.star-rating {
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: flex-end;
+    gap: 5px;
+}
+
+.star-rating input {
+    display: none;
+}
+
+.star-rating label {
+    font-size: 2rem;
+    color: #cbd5e1;
+    cursor: pointer;
+    transition: color 0.15s ease;
+}
+
+.star-rating label:hover,
+.star-rating label:hover ~ label,
+.star-rating input:checked ~ label {
+    color: #f59e0b;
+}
+
+/* Voice Assistant Wave Indicator Animation */
+.voice-wave-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    height: 40px;
+    margin-top: 15px;
+}
+
+.voice-wave-bar {
+    width: 4px;
+    height: 8px;
+    background-color: var(--primary-color);
+    border-radius: 2px;
+    animation: bounce 0.8s ease-in-out infinite alternate;
+}
+
+.voice-wave-container.active .voice-wave-bar {
+    background-color: var(--accent-color);
+}
+
+.voice-wave-bar:nth-child(2) { animation-delay: 0.1s; }
+.voice-wave-bar:nth-child(3) { animation-delay: 0.2s; }
+.voice-wave-bar:nth-child(4) { animation-delay: 0.3s; }
+.voice-wave-bar:nth-child(5) { animation-delay: 0.4s; }
+
+@keyframes bounce {
+    0% { height: 8px; }
+    100% { height: 35px; }
+}
+
+/* Radar & Drone Telemetry Simulations */
+.radar-grid {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1;
+    background: radial-gradient(circle, rgba(16, 185, 129, 0.08) 20%, transparent 80%), #111827;
+    border: 2px solid var(--primary-dark);
+    border-radius: 50%;
+    overflow: hidden;
+    box-shadow: inset 0 0 25px rgba(16, 185, 129, 0.3);
+}
+
+.radar-sweep {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    background: conic-gradient(from 0deg, rgba(16, 185, 129, 0.4) 0deg, transparent 90deg);
+    border-radius: 50%;
+    animation: sweep 4s linear infinite;
+    transform-origin: center;
+}
+
+.radar-blip {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background-color: var(--primary-color);
+    border-radius: 50%;
+    box-shadow: 0 0 10px var(--primary-color);
+    animation: blipFade 1.5s ease-out infinite;
+}
+
+@keyframes sweep {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+@keyframes blipFade {
+    0% { opacity: 0; transform: scale(0.5); }
+    30% { opacity: 1; }
+    100% { opacity: 0; transform: scale(1.5); }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+::-webkit-scrollbar-track {
+    background: var(--bg-primary);
+}
+::-webkit-scrollbar-thumb {
+    background: var(--border-color);
+    border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: var(--text-secondary);
+}
+
+/* Theme Switcher Toggle styling */
+.theme-switch {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 26px;
+}
+
+.theme-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider-toggle {
+    position: absolute;
+    cursor: pointer;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: #cbd5e1;
+    transition: .4s;
+    border-radius: 34px;
+}
+
+.slider-toggle:before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+}
+
+input:checked + .slider-toggle {
+    background-color: var(--primary-color);
+}
+
+input:checked + .slider-toggle:before {
+    transform: translateX(24px);
+}
+
+/* General Layout Responsive Fixes */
+@media (max-width: 991px) {
+    #sidebar {
+        margin-left: -260px;
+    }
+    #sidebar.active {
+        margin-left: 0;
+    }
+    #content {
+        margin-left: 0;
+    }
+    #sidebar.active + #content {
+        margin-left: 0;
+    }
+}
+
+/* ================= PRINT OVERRIDES FOR PDF AUTO REPORTS ================= */
+@media print {
+    body {
+        background-color: #ffffff !important;
+        color: #000000 !important;
+        font-size: 11pt !important;
+    }
+    
+    #sidebar, .top-navbar, .header-actions, .btn-agri, .btn-outline-agri, form, .no-print {
+        display: none !important;
+    }
+    
+    #content {
+        margin-left: 0 !important;
+        padding: 0 !important;
+        width: 100% !important;
+    }
+    
+    .card-glass {
+        border: 1px solid #000000 !important;
+        box-shadow: none !important;
+        background: transparent !important;
+        page-break-inside: avoid;
+        margin-bottom: 20px !important;
+    }
+    
+    .card-header-agri {
+        border-bottom: 1px solid #000000 !important;
+        background: transparent !important;
+        color: #000000 !important;
+        font-weight: bold !important;
+    }
+    
+    h1, h2, h3, h4, h5 {
+        color: #000000 !important;
+        page-break-after: avoid;
+    }
+}

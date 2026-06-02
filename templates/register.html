@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center align-items-center" style="min-height: 80vh; padding: 20px 0;">
+    <div class="col-md-8">
+        <div class="card-glass shadow-lg">
+            <div class="card-header-agri text-center py-3 bg-success text-white">
+                <h3 class="mb-0 fw-bold"><i class="fa-solid fa-user-plus me-2"></i> Register Farmer Account</h3>
+            </div>
+            <div class="card-body-agri p-4">
+                <form action="{{ url_for('register') }}" method="POST">
+                    
+                    <div class="row">
+                        <!-- Left Column -->
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="name" class="form-label fw-bold text-muted">Full Name</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light"><i class="fa-solid fa-user"></i></span>
+                                    <input type="text" class="form-control form-control-agri" id="name" name="name" required placeholder="Enter your full name">
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="mobile" class="form-label fw-bold text-muted">Mobile Number</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light"><i class="fa-solid fa-phone"></i></span>
+                                    <input type="tel" class="form-control form-control-agri" id="mobile" name="mobile" required placeholder="10-digit phone number">
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="email" class="form-label fw-bold text-muted">Email Address</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light"><i class="fa-solid fa-envelope"></i></span>
+                                    <input type="email" class="form-control form-control-agri" id="email" name="email" required placeholder="farmer@domain.com">
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="password" class="form-label fw-bold text-muted">Password</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light"><i class="fa-solid fa-key"></i></span>
+                                    <input type="password" class="form-control form-control-agri" id="password" name="password" required placeholder="Choose secure password">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Right Column (Location Parameters) -->
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="village" class="form-label fw-bold text-muted">Village Name</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light"><i class="fa-solid fa-tree"></i></span>
+                                    <input type="text" class="form-control form-control-agri" id="village" name="village" required placeholder="E.g., Halasuru">
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="district" class="form-label fw-bold text-muted">District</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light"><i class="fa-solid fa-map-location-dot"></i></span>
+                                    <input type="text" class="form-control form-control-agri" id="district" name="district" required placeholder="E.g., Shimoga">
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="state" class="form-label fw-bold text-muted">State</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light"><i class="fa-solid fa-landmark"></i></span>
+                                    <input type="text" class="form-control form-control-agri" id="state" name="state" required placeholder="E.g., Karnataka">
+                                </div>
+                            </div>
+                            
+                            <div class="alert alert-light mt-4 py-2 border">
+                                <small class="text-muted"><i class="fa-solid fa-shield-halved me-1"></i> Data Security: We store passwords in hashed format. Your personal details are protected.</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-grid mt-4">
+                        <button type="submit" class="btn btn-agri w-100 py-2">
+                            <i class="fa-solid fa-user-check me-2"></i> Complete Farmer Registration
+                        </button>
+                    </div>
+
+                    <div class="text-center mt-3">
+                        <span class="text-muted small">Already registered? </span>
+                        <a href="{{ url_for('login') }}" class="text-success fw-bold small text-decoration-none">Login Here</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

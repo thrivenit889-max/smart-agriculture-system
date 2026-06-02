@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <!-- Left Column: Input Form -->
+    <div class="col-md-5 mb-4">
+        <div class="card-glass p-4 h-100">
+            <h4 class="fw-bold mb-4 text-success border-bottom pb-2">
+                <i class="fa-solid fa-flask-vial me-2"></i> Soil Health Input
+            </h4>
+            
+            <form action="{{ url_for('soil') }}" method="POST" enctype="multipart/form-data">
+                <div class="mb-3">
+                    <label for="ph" class="form-label fw-semibold text-muted">Soil pH level</label>
+                    <input type="number" step="0.1" min="0" max="14" class="form-control form-control-agri" id="ph" name="ph" required placeholder="E.g., 6.5">
+                    <div class="form-text small">Ideal range for most crops is 6.0 to 7.2.</div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="nitrogen" class="form-label fw-semibold text-muted">Nitrogen (N) - kg/ha</label>
+                    <input type="number" step="1" min="0" class="form-control form-control-agri" id="nitrogen" name="nitrogen" required placeholder="E.g., 340">
+                </div>
+
+                <div class="mb-3">
+                    <label for="phosphorus" class="form-label fw-semibold text-muted">Phosphorus (P) - kg/ha</label>
+                    <input type="number" step="1" min="0" class="form-control form-control-agri" id="phosphorus" name="phosphorus" required placeholder="E.g., 35">
+                </div>
+
+                <div class="mb-3">
+                    <label for="potassium" class="form-label fw-semibold text-muted">Potassium (K) - kg/ha</label>
+                    <input type="number" step="1" min="0" class="form-control form-control-agri" id="potassium" name="potassium" required placeholder="E.g., 220">
+                </div>
+
+                <div class="mb-3">
+                    <label for="organic_matter" class="form-label fw-semibold text-muted">Organic Matter (%)</label>
+                    <input type="number" step="0.1" min="0" max="100" class="form-control form-control-agri" id="organic_matter" name="organic_matter" required placeholder="E.g., 2.1">
+                </div>
+
+                <div class="mb-4">
+                    <label for="report_file" class="form-label fw-semibold text-muted">Upload Report Copy (PDF or Image)</label>
+                    <input class="form-control" type="file" id="report_file" name="report_file" accept=".pdf,.png,.jpg,.jpeg">
+                    <div class="form-text small">Only PDF, PNG, JPG, or JPEG allowed (Max 8MB).</div>
+                </div>
+
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-agri py-2">
+                        <i class="fa-solid fa-calculator me-2"></i> Run AI Soil Diagnostic
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Right Column: Results & History -->
+    <div class="col-md-7 mb-4">
+        <div class="card-glass p-4 h-100">
+            <h4 class="fw-bold mb-4 text-success border-bottom pb-2">
+                <i class="fa-solid fa-history me-2"></i> Analysis History & AI Output
+            </h4>
+
+            {% if reports %}
+                <div class="accordion" id="soilAccordion">
+                    {% for report in reports %}
+                    <div class="accordion-item bg-transparent border-bottom border-light mb-3">
+                        <h2 class="accordion-header" id="heading{{ report.id }}">
+                            <button class="accordion-button bg-transparent collapsed px-0 py-3" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ report.id }}" aria-expanded="false" aria-controls="collapse{{ report.id }}">
+                                <div class="w-100 d-flex justify-content-between align-items-center pr-3">
+                                    <div>
+                                        <strong class="text-primary-emphasis">Tested on: {{ report.created_at[:10] }}</strong>
+                                        <span class="d-block small text-muted">pH: {{ report.ph }} | N: {{ report.nitrogen }} | P: {{ report.phosphorus }} | K: {{ report.potassium }}</span>
+                                    </div>
+                                    <div class="me-3">
+                                        <span class="badge {% if report.health_score >= 80 %}bg-success{% elif report.health_score >= 50 %}bg-warning{% else %}bg-danger{% endif %} py-2 px-3">
+                                            Score: {{ report.health_score }}/100
+                                        </span>
+                                    </div>
+                                </div>
+                            </button>
+                        </h2>
+                        
+                        <div id="collapse{{ report.id }}" class="accordion-collapse collapse" aria-labelledby="heading{{ report.id }}" data-bs-parent="#soilAccordion">
+                            <div class="accordion-body px-0 py-3 text-muted">
+                                <h6 class="fw-bold text-success mb-2">Diagnostic Recommendations:</h6>
+                                <p class="mb-3 whitespace-pre-line">{{ report.recommendations }}</p>
+                                
+                                {% if report.report_file %}
+                                <a href="{{ url_for('static', filename='../uploads/' + report.report_file) }}" target="_blank" class="btn btn-outline-agri btn-sm">
+                                    <i class="fa-solid fa-file-pdf me-1"></i> View Uploaded Report Document
+                                </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="text-center py-5 text-muted">
+                    <i class="fa-solid fa-flask-vial display-4 mb-3 text-muted"></i>
+                    <p class="mb-0">No soil reports logged yet. Enter your soil variables to run the AI engine.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

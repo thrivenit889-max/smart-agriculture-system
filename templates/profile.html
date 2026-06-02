@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <!-- Left Column - Profile Card Info -->
+    <div class="col-md-4 mb-4">
+        <div class="card-glass text-center p-4 h-100">
+            <div class="mb-3">
+                <i class="fa-solid fa-circle-user text-success" style="font-size: 6rem;"></i>
+            </div>
+            <h4 class="fw-bold mb-1">{{ user.name }}</h4>
+            <span class="badge bg-success-subtle text-success border border-success-subtle px-3 py-2 rounded mb-3">Active Farmer Account</span>
+            <hr>
+            <div class="text-start mt-3">
+                <p class="text-muted mb-2"><i class="fa-solid fa-envelope me-2 text-success"></i> <strong>Email:</strong> {{ user.email }}</p>
+                <p class="text-muted mb-2"><i class="fa-solid fa-phone me-2 text-success"></i> <strong>Mobile:</strong> {{ user.mobile }}</p>
+                <p class="text-muted mb-2"><i class="fa-solid fa-tree me-2 text-success"></i> <strong>Village:</strong> {{ user.village }}</p>
+                <p class="text-muted mb-2"><i class="fa-solid fa-map-pin me-2 text-success"></i> <strong>Location:</strong> {{ user.district }}, {{ user.state }}</p>
+                <p class="text-muted mb-0"><i class="fa-solid fa-calendar me-2 text-success"></i> <strong>Joined:</strong> {{ user.created_at[:10] }}</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Column - Edit Profile Form -->
+    <div class="col-md-8 mb-4">
+        <div class="card-glass p-4 h-100">
+            <h4 class="fw-bold mb-4 text-success border-bottom pb-2"><i class="fa-solid fa-user-pen me-2"></i> Update Profile Details</h4>
+            
+            <form action="{{ url_for('profile') }}" method="POST">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="name" class="form-label fw-semibold text-muted">Full Name</label>
+                        <input type="text" class="form-control form-control-agri" id="name" name="name" value="{{ user.name }}" required>
+                    </div>
+                    
+                    <div class="col-md-6 mb-3">
+                        <label for="mobile" class="form-label fw-semibold text-muted">Mobile Number</label>
+                        <input type="tel" class="form-control form-control-agri" id="mobile" name="mobile" value="{{ user.mobile }}" required>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label for="village" class="form-label fw-semibold text-muted">Village</label>
+                        <input type="text" class="form-control form-control-agri" id="village" name="village" value="{{ user.village }}" required>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label for="district" class="form-label fw-semibold text-muted">District</label>
+                        <input type="text" class="form-control form-control-agri" id="district" name="district" value="{{ user.district }}" required>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label for="state" class="form-label fw-semibold text-muted">State</label>
+                        <input type="text" class="form-control form-control-agri" id="state" name="state" value="{{ user.state }}" required>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-semibold text-muted">Registration Email (Unchangeable)</label>
+                        <input type="email" class="form-control form-control-agri bg-light text-muted" value="{{ user.email }}" disabled>
+                    </div>
+                </div>
+
+                <div class="mt-4 text-end">
+                    <button type="submit" class="btn btn-agri">
+                        <i class="fa-solid fa-floppy-disk me-2"></i> Save Profile Modifications
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

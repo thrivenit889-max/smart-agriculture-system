@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <!-- Left Column: Irrigation Calculator Form -->
+    <div class="col-md-5 mb-4">
+        <div class="card-glass p-4 h-100">
+            <h4 class="fw-bold mb-4 text-success border-bottom pb-2">
+                <i class="fa-solid fa-droplet me-2"></i> Water Requirement Calculator
+            </h4>
+            
+            <form action="{{ url_for('irrigation') }}" method="POST">
+                <div class="mb-3">
+                    <label for="crop_name" class="form-label fw-semibold text-muted">Select Active Field/Crop</label>
+                    <select class="form-select form-control-agri" id="crop_name" name="crop_name" required>
+                        {% if crops %}
+                            {% for crop in crops %}
+                            <option value="{{ crop.crop_name }}">{{ crop.crop_name }} (Field {{ loop.index }})</option>
+                            {% endfor %}
+                        {% else %}
+                            <option value="General Crop">General Field Crop</option>
+                        {% endif %}
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label for="moisture" class="form-label fw-semibold text-muted">Current Soil Moisture Sensor Reading (%)</label>
+                    <input type="number" min="0" max="100" class="form-control form-control-agri" id="moisture" name="moisture" required placeholder="E.g., 35">
+                    <div class="form-text small">Standard target moisture threshold is 60%.</div>
+                </div>
+
+                <div class="mb-4">
+                    <label for="soil_type" class="form-label fw-semibold text-muted">Soil Class</label>
+                    <select class="form-select form-control-agri" id="soil_type" name="soil_type" required>
+                        <option value="Clay">Clay (Holds moisture long)</option>
+                        <option value="Sandy">Sandy (Needs frequent watering)</option>
+                        <option value="Loamy">Loamy (Standard irrigation)</option>
+                        <option value="Black">Black (Good retention)</option>
+                        <option value="Red">Red (Average drainage)</option>
+                    </select>
+                </div>
+
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-agri py-2">
+                        <i class="fa-solid fa-calculator me-2"></i> Compute Water Volume
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Right Column: Telemetry Analytics Chart & Calculation Results -->
+    <div class="col-md-7 mb-4">
+        <div class="card-glass p-4 h-100">
+            <h4 class="fw-bold mb-4 text-success border-bottom pb-2">
+                <i class="fa-solid fa-chart-line me-2"></i> Moisture Telemetry Analytics
+            </h4>
+
+            {% if req_water is not none %}
+                <div class="p-3 mb-4 rounded border border-info-subtle bg-info-subtle bg-opacity-10 animate__animated animate__fadeIn">
+                    <h5 class="fw-bold text-info"><i class="fa-solid fa-square-poll-horizontal me-2"></i>Irrigation Requirement</h5>
+                    <p class="mb-2">Calculated for: <strong>{{ crop_name }}</strong></p>
+                    <p class="mb-2">Sensor Soil Moisture: <span class="badge bg-warning">{{ moisture }}%</span> (Target: 60%)</p>
+                    <hr>
+                    <div class="d-flex align-items-center justify-content-between">
+                        <h4 class="fw-bold mb-0 text-primary">Required volume: {{ req_water }} Litres / Acre</h4>
+                        <span class="badge bg-primary py-2 px-3"><i class="fa-solid fa-clock-rotate-left"></i> Run drip: {{ (req_water / 300)|round|int }} Mins</span>
+                    </div>
+                </div>
+            {% endif %}
+
+            <!-- Sensor Telemetry Line Chart -->
+            <div style="height: 250px; position: relative;">
+                <canvas id="moistureChart" data-values="{{ moisture_data }}"></canvas>
+            </div>
+            
+            <div class="alert alert-light mt-3 border mb-0">
+                <small class="text-muted"><i class="fa-solid fa-circle-info text-info me-1"></i> Data values represent real-time updates fetched from physical moisture telemetry probes in fields A, B, and C.</small>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

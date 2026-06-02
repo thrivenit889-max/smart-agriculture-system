@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Agriculture & Rural Tech</title>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Custom Style CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+    <div class="wrapper">
+        <!-- Sidebar Navigation -->
+        <nav id="sidebar" class="no-print">
+            <div class="sidebar-header">
+                <h4><i class="fa-solid fa-leaf text-success"></i> SmartAgri Tech</h4>
+            </div>
+
+            <ul class="list-unstyled components">
+                {% if session.get('user_id') %}
+                <li class="{% if request.endpoint == 'dashboard' %}active{% endif %}">
+                    <a href="{{ url_for('dashboard') }}"><i class="fa-solid fa-gauge"></i> Dashboard</a>
+                </li>
+                <li class="{% if request.endpoint == 'soil' %}active{% endif %}">
+                    <a href="{{ url_for('soil') }}"><i class="fa-solid fa-flask-vial"></i> Soil Analysis</a>
+                </li>
+                <li class="{% if request.endpoint == 'crop_recommendation' %}active{% endif %}">
+                    <a href="{{ url_for('crop_recommendation') }}"><i class="fa-solid fa-seedling"></i> Crop Suggestion</a>
+                </li>
+                <li class="{% if request.endpoint == 'fertilizer' %}active{% endif %}">
+                    <a href="{{ url_for('fertilizer') }}"><i class="fa-solid fa-bag-shopping"></i> Fertilizer NPK</a>
+                </li>
+                <li class="{% if request.endpoint == 'weather' %}active{% endif %}">
+                    <a href="{{ url_for('weather') }}"><i class="fa-solid fa-cloud-sun-rain"></i> Weather Forecast</a>
+                </li>
+                <li class="{% if request.endpoint == 'irrigation' %}active{% endif %}">
+                    <a href="{{ url_for('irrigation') }}"><i class="fa-solid fa-droplet"></i> Smart Irrigation</a>
+                </li>
+                <li class="{% if request.endpoint == 'disease' %}active{% endif %}">
+                    <a href="{{ url_for('disease') }}"><i class="fa-solid fa-bug-slash"></i> Disease Detector</a>
+                </li>
+                <li class="{% if request.endpoint == 'pest' %}active{% endif %}">
+                    <a href="{{ url_for('pest') }}"><i class="fa-solid fa-spider"></i> Pest Identifier</a>
+                </li>
+                <li class="{% if request.endpoint == 'market' %}active{% endif %}">
+                    <a href="{{ url_for('market') }}"><i class="fa-solid fa-chart-line"></i> Market Prices</a>
+                </li>
+                <li class="{% if request.endpoint == 'finance' %}active{% endif %}">
+                    <a href="{{ url_for('finance') }}"><i class="fa-solid fa-wallet"></i> Expense Manager</a>
+                </li>
+                <li class="{% if request.endpoint == 'drone' %}active{% endif %}">
+                    <a href="{{ url_for('drone') }}"><i class="fa-solid fa-helicopter"></i> Drone Monitor</a>
+                </li>
+                <li class="{% if request.endpoint == 'reports' %}active{% endif %}">
+                    <a href="{{ url_for('reports') }}"><i class="fa-solid fa-file-invoice"></i> Reports Hub</a>
+                </li>
+                <li class="{% if request.endpoint == 'feedback' %}active{% endif %}">
+                    <a href="{{ url_for('feedback') }}"><i class="fa-solid fa-comments"></i> Suggestions Box</a>
+                </li>
+                
+                {% if session.get('role') == 'admin' %}
+                <li class="{% if request.endpoint == 'feedback_admin' %}active{% endif %}">
+                    <a href="{{ url_for('feedback_admin') }}" class="text-warning fw-bold"><i class="fa-solid fa-lock"></i> Feedback Portal (Admin)</a>
+                </li>
+                {% endif %}
+                
+                <li>
+                    <a href="{{ url_for('logout') }}"><i class="fa-solid fa-right-from-bracket text-danger"></i> Logout</a>
+                </li>
+                {% else %}
+                <li class="{% if request.endpoint == 'login' %}active{% endif %}">
+                    <a href="{{ url_for('login') }}"><i class="fa-solid fa-right-to-bracket"></i> Login</a>
+                </li>
+                <li class="{% if request.endpoint == 'register' %}active{% endif %}">
+                    <a href="{{ url_for('register') }}"><i class="fa-solid fa-user-plus"></i> Register</a>
+                </li>
+                {% endif %}
+            </ul>
+
+            <!-- AI Voice Assistant Widget (Sidebar Embedded) -->
+            {% if session.get('user_id') %}
+            <div class="p-3 mx-2 my-4 rounded card-glass text-center no-print" style="background: rgba(0,0,0,0.15); border: 1px solid rgba(255,255,255,0.05);">
+                <span class="small fw-semibold text-uppercase d-block mb-1 text-light"><i class="fa-solid fa-microphone text-success"></i> Kannada/English AI Voice</span>
+                <select id="assistantLang" class="form-select form-select-sm mb-2 text-dark" style="font-size: 0.75rem;">
+                    <option value="kn-IN">ಕನ್ನಡ (Kannada)</option>
+                    <option value="en-US">English (US)</option>
+                </select>
+                <button id="voiceBtn" class="btn btn-outline-agri btn-sm w-100 mb-1" style="color:#fff; border-color:#10b981;">
+                    <i class="fa-solid fa-microphone"></i> Click to Speak
+                </button>
+                <small id="voiceStatus" class="d-block text-muted" style="font-size: 0.75rem;">Offline / ನಿಷ್ಕ್ರಿಯ</small>
+                
+                <!-- Soundwave Animation container -->
+                <div id="voiceWave" class="voice-wave-container mt-1">
+                    <div class="voice-wave-bar"></div>
+                    <div class="voice-wave-bar"></div>
+                    <div class="voice-wave-bar"></div>
+                    <div class="voice-wave-bar"></div>
+                    <div class="voice-wave-bar"></div>
+                </div>
+            </div>
+            {% endif %}
+        </nav>
+
+        <!-- Main Workspace -->
+        <div id="content">
+            <!-- Navbar Header -->
+            <div class="top-navbar no-print">
+                <div class="d-flex align-items-center gap-3">
+                    {% if session.get('user_id') %}
+                    <button type="button" id="sidebarCollapse" class="btn btn-outline-agri">
+                        <i class="fas fa-align-left"></i>
+                    </button>
+                    {% endif %}
+                    <h2 class="mb-0">Smart Agriculture System</h2>
+                </div>
+
+                <div class="header-actions">
+                    <!-- Light / Dark Mode Toggle Slider -->
+                    <span class="small text-muted"><i class="fa-solid fa-circle-half-stroke"></i> Dark Mode</span>
+                    <label class="theme-switch">
+                        <input type="checkbox" id="themeToggle">
+                        <span class="slider-toggle"></span>
+                    </label>
+
+                    {% if session.get('user_id') %}
+                    <a href="{{ url_for('profile') }}" class="btn btn-agri btn-sm">
+                        <i class="fa-solid fa-user"></i> {{ session.get('name', 'Farmer') }}
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Flash Banners Container -->
+            <div class="container-fluid no-print">
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+            </div>
+
+            <!-- Page-Specific Context -->
+            <div class="container-fluid">
+                {% block content %}{% endblock %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- TensorFlow.js CDN (Required for Browser-side MobileNet classification) -->
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.17.0/dist/tf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet@2.1.0/dist/mobilenet.min.js"></script>
+    
+    <!-- Custom JS Scripts -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/charts.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/ai.js') }}"></script>
+</body>
+</html>
